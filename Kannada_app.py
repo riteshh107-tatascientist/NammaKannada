@@ -2,12 +2,15 @@ import io
 import json
 import random
 import re
+
 from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
 from data import ALL_ITEMS, LESSONS, PHRASES
 
 st.set_page_config(page_title="NammaKannada", page_icon="📘", layout="wide")
