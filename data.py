@@ -100,3 +100,18 @@ for _p in PHRASES:
     _p["lesson"] = 0
 
 ALL_ITEMS = [x for l in LESSONS for x in l["words"]] + PHRASES
+
+# Kannada alphabet (akshara-male): (letter, pronunciation)
+VOWELS = [
+    ("ಅ", "a"), ("ಆ", "aa"), ("ಇ", "i"), ("ಈ", "ii"), ("ಉ", "u"), ("ಊ", "uu"),
+    ("ಋ", "ru"), ("ಎ", "e"), ("ಏ", "ee"), ("ಐ", "ai"), ("ಒ", "o"), ("ಓ", "oo"), ("ಔ", "au"),
+]
+CONSONANTS = [
+    ("ಕ", "ka"), ("ಖ", "kha"), ("ಗ", "ga"), ("ಘ", "gha"), ("ಙ", "nga"),
+    ("ಚ", "cha"), ("ಛ", "chha"), ("ಜ", "ja"), ("ಝ", "jha"), ("ಞ", "nya"),
+    ("ಟ", "Ta"), ("ಠ", "Tha"), ("ಡ", "Da"), ("ಢ", "Dha"), ("ಣ", "Na"),
+    ("ತ", "ta"), ("ಥ", "tha"), ("ದ", "da"), ("ಧ", "dha"), ("ನ", "na"),
+    ("ಪ", "pa"), ("ಫ", "pha"), ("ಬ", "ba"), ("ಭ", "bha"), ("ಮ", "ma"),
+    ("ಯ", "ya"), ("ರ", "ra"), ("ಲ", "la"), ("ವ", "va"), ("ಶ", "sha"),
+    ("ಷ", "Sha"), ("ಸ", "sa"), ("ಹ", "ha"), ("ಳ", "La"),
+]

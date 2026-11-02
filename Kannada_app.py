@@ -1,23 +1,22 @@
 import io
 import json
+import sys
 import random
 import re
-
 from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent))
-from data import ALL_ITEMS, LESSONS, PHRASES
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from data import ALL_ITEMS, CONSONANTS, LESSONS, PHRASES, VOWELS
 
 st.set_page_config(page_title="NammaKannada", page_icon="📘", layout="wide")
 
 DATA_DIR = Path(__file__).parent / "user_data"
 DATA_DIR.mkdir(exist_ok=True)
-PAGES = ["Home", "Learn Kannada", "Phrasebook", "Flashcards", "Practice Quiz", "My Progress", "About Project"]
+PAGES = ["Home", "Learn Kannada", "Kannada Alphabet", "Phrasebook", "Flashcards", "Practice Quiz", "My Progress", "About Project"]
 
 # ---------------------------------------------------------------- styling
 st.markdown(
@@ -162,10 +161,10 @@ if page == "Home":
 
     st.markdown("### 🚀 Start now")
     b = st.columns(4)
-    b[0].button("📖 Learn", on_click=navigate, args=("Learn Kannada",), use_container_width=True)
-    b[1].button("🗂️ Flashcards", on_click=navigate, args=("Flashcards",), use_container_width=True)
-    b[2].button("🎯 Quiz", on_click=navigate, args=("Practice Quiz",), use_container_width=True)
-    b[3].button("💬 Phrasebook", on_click=navigate, args=("Phrasebook",), use_container_width=True)
+    b[0].button("📖 Learn", on_click=navigate, args=("Learn Kannada",), width="stretch")
+    b[1].button("🗂️ Flashcards", on_click=navigate, args=("Flashcards",), width="stretch")
+    b[2].button("🎯 Quiz", on_click=navigate, args=("Practice Quiz",), width="stretch")
+    b[3].button("💬 Phrasebook", on_click=navigate, args=("Phrasebook",), width="stretch")
     st.info("Tip: study a little every day. A streak gives you consistency, and consistency builds fluency.")
 
 # ---------------------------------------------------------------- LEARN
@@ -177,7 +176,7 @@ elif page == "Learn Kannada":
             st.info(f"💡 {l['tip']}")
             df = pd.DataFrame(l["words"])[["kn", "tr", "en", "hi"]]
             df.columns = ["ಕನ್ನಡ", "Pronunciation", "English", "हिन्दी"]
-            st.dataframe(df, hide_index=True, use_container_width=True)
+            st.dataframe(df, hide_index=True, width="stretch")
             audio_player(l["words"], f"l{l['id']}")
             c1, c2 = st.columns(2)
             if c1.button("✅ Mark lesson complete (+20 XP)", key=f"done{l['id']}", disabled=done):
@@ -189,6 +188,21 @@ elif page == "Learn Kannada":
                 st.session_state.quiz = None
                 navigate("Practice Quiz")
                 st.rerun()
+
+# ---------------------------------------------------------------- ALPHABET
+elif page == "Kannada Alphabet":
+    hero("🔤 Kannada Alphabet (ಅಕ್ಷರಮಾಲೆ)", "Learn vowels (ಸ್ವರಗಳು) and consonants (ವ್ಯಂಜನಗಳು) with audio.")
+    t1, t2 = st.tabs(["Vowels ಸ್ವರ", "Consonants ವ್ಯಂಜನ"])
+    for tab, letters, key in ((t1, VOWELS, "v"), (t2, CONSONANTS, "c")):
+        with tab:
+            cols = st.columns(6)
+            for idx, (kn, tr_) in enumerate(letters):
+                cols[idx % 6].markdown(
+                    f'<div class="card" style="text-align:center"><div class="kn">{kn}</div><div class="tr">{tr_}</div></div>',
+                    unsafe_allow_html=True,
+                )
+            audio_player([{"kn": k, "en": t} for k, t in letters], "alpha" + key)
+    st.caption("Capital letters in pronunciation (Ta, Da, Na, La, Sha) are retroflex sounds: the tongue curls back.")
 
 # ---------------------------------------------------------------- PHRASEBOOK
 elif page == "Phrasebook":
@@ -237,7 +251,7 @@ elif page == "Flashcards":
 
     if not fc["flip"]:
         st.markdown(f'<div class="flash"><div class="big-kn">{card["kn"]}</div><p>What does this mean?</p></div>', unsafe_allow_html=True)
-        if st.button("🔄 Flip card", use_container_width=True):
+        if st.button("🔄 Flip card", width="stretch"):
             fc["flip"] = True
             st.rerun()
     else:
@@ -253,8 +267,8 @@ elif page == "Flashcards":
             add_xp(2 if known else 0)
             fc["cur"], fc["flip"] = None, False
 
-        c1.button("😓 Again", on_click=rate, args=(False,), use_container_width=True)
-        c2.button("😎 I knew it (+2 XP)", on_click=rate, args=(True,), use_container_width=True)
+        c1.button("😓 Again", on_click=rate, args=(False,), width="stretch")
+        c2.button("😎 I knew it (+2 XP)", on_click=rate, args=(True,), width="stretch")
     audio_player([card], "fc")
 
 # ---------------------------------------------------------------- QUIZ
@@ -319,7 +333,7 @@ elif page == "Practice Quiz":
             st.balloons()
         rev = pd.DataFrame(qz["log"])
         rev.columns = ["Question", "Your answer", "Correct answer", "Result"]
-        st.dataframe(rev, hide_index=True, use_container_width=True)
+        st.dataframe(rev, hide_index=True, width="stretch")
         c1, c2 = st.columns(2)
         if c1.button("🔁 New quiz"):
             st.session_state.quiz = None
@@ -381,7 +395,7 @@ elif page == "My Progress":
         df = pd.DataFrame(h)
         df["Accuracy %"] = (100 * df["score"] / df["total"]).round()
         st.line_chart(df["Accuracy %"])
-        st.dataframe(df.iloc[::-1], hide_index=True, use_container_width=True)
+        st.dataframe(df.iloc[::-1], hide_index=True, width="stretch")
     else:
         st.info("No quizzes taken yet. Take one to see your progress here.")
     if st.button("🗑️ Reset my progress"):
